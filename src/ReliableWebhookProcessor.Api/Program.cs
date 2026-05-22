@@ -1,44 +1,33 @@
+/// <summary>
+/// Arquivo principal de inicialização da API (Entry Point).
+/// Na Clean Architecture, a camada Api (Presentation) é responsável apenas por 
+/// expor as rotas HTTP e configurar a Injeção de Dependências.
+/// </summary>
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// 1. Adiciona os serviços ao contêiner de Injeção de Dependência (DI Container).
+// É aqui que futuramente vamos registrar nossos Repositórios (Infrastructure) e Casos de Uso (Application).
+builder.Services.AddEndpointsApiExplorer(); // Permite que o Swagger descubra os endpoints
+builder.Services.AddSwaggerGen();           // Gera a documentação visual da API (Swagger)
 
+// 2. Constrói a aplicação com as configurações acima.
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// 3. Configura o Pipeline de Requisições HTTP (Middlewares).
+// A ordem aqui importa. Uma requisição passa por esses middlewares antes de chegar no seu Endpoint.
 if (app.Environment.IsDevelopment())
 {
+    // Habilita o Swagger apenas em ambiente de desenvolvimento (localhost)
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Força o redirecionamento de chamadas HTTP para HTTPS (mais seguro)
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// Nota: O código de exemplo "WeatherForecast" foi removido para mantermos o projeto 
+// 100% focado no nosso domínio de Webhooks, que criaremos na Etapa 2.
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
+// 4. Roda a aplicação, ficando "escutando" por requisições HTTP.
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

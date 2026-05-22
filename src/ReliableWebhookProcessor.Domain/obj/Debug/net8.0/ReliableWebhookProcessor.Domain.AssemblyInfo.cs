@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ReliableWebhookProcessor.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c0b6454e24bb94f2b5dd57848d34d368cd635d0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf7025ce0a9a6a10df5641d9bd9a201f3806cad7")]
 [assembly: System.Reflection.AssemblyProductAttribute("ReliableWebhookProcessor.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ReliableWebhookProcessor.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
