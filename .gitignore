@@ -11,18 +11,18 @@
 # O compilador gera arquivos temporários (obj) e executáveis (bin) nestas pastas.
 # Como eles são gerados localmente e mudam toda vez que você aperta "Run", 
 # eles NUNCA devem ser comitados.
-[Bb]in/
-[Oo]bj/
-[Oo]ut/
-bld/
-[Dd]ebug/
-[Rr]elease/
+**/bin/
+**/obj/
+**/out/
+**/bld/
+**/Debug/
+**/Release/
+bin/
+obj/
 
 # ------------------------------------------------------------------------------
 # 2. Arquivos de Usuário e Cache das IDEs (Visual Studio / VS Code)
 # ------------------------------------------------------------------------------
-# Configurações pessoais do seu editor e caches locais de indexação. 
-# Se fossem versionados, bagunçariam a máquina de outro desenvolvedor.
 .vs/
 .vscode/*
 !.vscode/settings.json
@@ -37,8 +37,6 @@ bld/
 # ------------------------------------------------------------------------------
 # 3. Pacotes e Dependências (NuGet)
 # ------------------------------------------------------------------------------
-# Bibliotecas baixadas da internet. Como podemos restaurá-las com "dotnet restore",
-# não faz sentido gastar espaço do repositório salvando-as.
 *.nupkg
 *.snupkg
 **/[Pp]ackages/*
@@ -47,9 +45,8 @@ bld/
 # ------------------------------------------------------------------------------
 # 4. Logs e Resultados de Testes
 # ------------------------------------------------------------------------------
-# Resultados de execução de testes e logs gerados pelo sistema enquanto roda.
-[Ll]og/
-[Ll]ogs/
+**/[Ll]og/
+**/[Ll]ogs/
 *.log
 [Tt]est[Rr]esult*/
 TestResult.xml
@@ -60,8 +57,6 @@ coverage*.info
 # ------------------------------------------------------------------------------
 # 5. Arquivos de Ambiente (Secrets Locais)
 # ------------------------------------------------------------------------------
-# Arquivos que podem conter senhas, strings de banco de dados ou chaves de API 
-# que rodam apenas na sua máquina. NUNCA devem ir para a nuvem.
 .env
 .env.*
 appsettings.Development.json
@@ -70,7 +65,6 @@ appsettings.Local.json
 # ------------------------------------------------------------------------------
 # 6. Sistema Operacional (Windows / Mac)
 # ------------------------------------------------------------------------------
-# Arquivos ocultos e de cache que o Windows e o macOS criam nas pastas sozinho.
 [Dd]esktop.ini
 Thumbs.db
 ehthumbs.db
