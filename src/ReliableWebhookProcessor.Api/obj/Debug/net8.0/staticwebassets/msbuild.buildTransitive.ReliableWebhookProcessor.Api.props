@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\ReliableWebhookProcessor.Api.props" />
-</Project>
