@@ -1,0 +1,12 @@
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\bin\Debug\net8.0\ReliableWebhookProcessor.Domain.deps.json
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\bin\Debug\net8.0\ReliableWebhookProcessor.Domain.dll
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\bin\Debug\net8.0\ReliableWebhookProcessor.Domain.pdb
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.AssemblyInfoInputs.cache
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.AssemblyInfo.cs
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.csproj.CoreCompileInputs.cache
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.sourcelink.json
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.dll
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\refint\ReliableWebhookProcessor.Domain.dll
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ReliableWebhookProcessor.Domain.pdb
+C:\Projects Github\reliable-webhook-processor\src\ReliableWebhookProcessor.Domain\obj\Debug\net8.0\ref\ReliableWebhookProcessor.Domain.dll
