@@ -25,26 +25,43 @@ flowchart TD
     style INFRA fill:#f8d7da,stroke:#dc3545,stroke-width:2px,color:black
 ```
 
-### Fluxo de uma Requisição (Sequence)
-O caminho de um dado quando o cliente envia um Webhook. A `Api` recebe a requisição, passa para a `Application`, que manipula o `Domain` e delega a persistência para a `Infrastructure`.
+### Fluxo de Recebimento de Webhooks (POST /api/webhooks)
+Este é o fluxo detalhado exato do endpoint que recebe os eventos. Ele demonstra o padrão "Fail Fast", verificação de Idempotência e salvamento antes do processamento.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Cliente
-    participant Api as 🚪 API
-    participant App as ⚙️ Application
-    participant Domain as 🫀 Domain
-    participant Infra as 🔌 Infrastructure
+    participant SistemaExterno as 🌐 MiniPay (Sistema Externo)
+    participant Controller as 🚪 WebhooksController
+    participant Domain as 🫀 WebhookEvent (Entidade)
+    participant Store as 💾 IWebhookInMemoryStore
 
-    Cliente->>Api: POST /api/webhook (JSON)
-    Api->>App: ProcessWebhook(DTO)
-    App->>Domain: Cria novo WebhookEvent()
-    Domain-->>App: Instância válida do Webhook
-    App->>Infra: SaveAsync(webhook)
-    Infra-->>App: Sucesso (Registro salvo)
-    App-->>Api: Resultado (Sucesso)
-    Api-->>Cliente: 200 OK / 202 Accepted
+    SistemaExterno->>Controller: POST /api/webhooks (CreateWebhookRequest)
+    
+    note over Controller: 1. Fail Fast Validations
+    alt Falta EventId ou EventType
+        Controller-->>SistemaExterno: 400 Bad Request
+    end
+
+    note over Controller: 2. Checagem de Idempotência
+    Controller->>Store: GetByEventIdAsync(request.EventId)
+    Store-->>Controller: Retorna Webhook (Se existir)
+    
+    alt EventId já existe no sistema
+        note over Controller: Ignora duplicata silenciosamente
+        Controller-->>SistemaExterno: 202 Accepted (WebhookResponse)
+    else EventId é Novo
+        note over Controller: 3. Serialização e Domínio
+        Controller->>Domain: new WebhookEvent(eventId, type, payload)
+        Domain-->>Controller: Instância (Status = Pending)
+        
+        note over Controller: 4. Persistência
+        Controller->>Store: AddAsync(newEvent)
+        Store-->>Controller: Sucesso
+        
+        note over Controller: 5. Resposta Rápida
+        Controller-->>SistemaExterno: 202 Accepted (WebhookResponse)
+    end
 ```
 
 ---
@@ -89,3 +106,61 @@ sequenceDiagram
 ### 🏗️ `ReliableWebhookProcessor.IntegrationTests`
 - **O que é:** Testes de Integração ou Ponta-a-Ponta (End-to-End).
 - **O porquê:** Garantem que as configurações como Entity Framework, conexões e injeção de dependências estejam funcionando corretamente.
+
+---
+
+## 5. Visão do Ecossistema Completo (End-to-End)
+
+Este diagrama demonstra o fluxo completo desde o momento em que algo acontece na "MiniPay" (como um pagamento aprovado) até o processamento real no background da nossa API, passando pelo banco de dados.
+
+```mermaid
+flowchart TD
+    subgraph MundoExterno ["Mundo Externo"]
+        User(("Usuário"))
+        MiniPay["🌐 Plataforma MiniPay"]
+    end
+
+    subgraph NossaAPI ["Nossa API (ReliableWebhookProcessor)"]
+        WebhookReceiver["🚪 Endpoint: POST /api/webhooks"]
+        DB[("🗄️ PostgreSQL")]
+        Worker["⚙️ Background Worker"]
+        BusinessLogic["🧠 Regra de Negócio Final<br/>(Ex: Liberar Curso)"]
+    end
+
+    User -- "1. Compra um curso" --> MiniPay
+    MiniPay -- "2. Dispara Webhook<br/>(payment.approved)" --> WebhookReceiver
+    
+    WebhookReceiver -- "3. Salva Status: Pending" --> DB
+    DB -. "3.1 Confirma a Gravação" .-> WebhookReceiver
+    
+    WebhookReceiver -. "4. Responde 202 Accepted" .-> MiniPay
+    
+    Worker -- "5. Fica escutando/buscando eventos<br/>Pending no banco" --> DB
+    DB -. "5.1 Devolve os eventos Pending" .-> Worker
+    
+    Worker -- "6. Repassa para a<br/>Regra de Negócio" --> BusinessLogic
+    BusinessLogic -- "7. Processamento OK.<br/>Atualiza Status p/ Completed" --> DB
+```
+
+---
+
+## 6. Ciclo de Vida do Webhook (Máquina de Estados)
+
+Todo evento recebido pela nossa API segue um ciclo de vida estrito. Ele nasce como `Pending` e viaja pelos estados até o sucesso (`Completed`) ou até desistirmos dele (`DeadLetter`).
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending : Recebido do MiniPay
+    
+    Pending --> Processing : Worker inicia o trabalho
+    
+    Processing --> Completed : Sucesso!
+    Completed --> [*]
+    
+    Processing --> Failed : Erro (Ex: BD fora do ar)
+    
+    Failed --> Pending : Retry (Espera o NextRetryAt passar)
+    
+    Processing --> DeadLetter : Erro repetido (Limite de Retries)
+    DeadLetter --> Pending : Reprocessamento Manual
+```

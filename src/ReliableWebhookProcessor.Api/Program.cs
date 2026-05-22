@@ -4,30 +4,36 @@
 /// expor as rotas HTTP e configurar a Injeção de Dependências.
 /// </summary>
 
+using ReliableWebhookProcessor.Application.Webhooks.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Adiciona os serviços ao contêiner de Injeção de Dependência (DI Container).
-// É aqui que futuramente vamos registrar nossos Repositórios (Infrastructure) e Casos de Uso (Application).
-builder.Services.AddEndpointsApiExplorer(); // Permite que o Swagger descubra os endpoints
-builder.Services.AddSwaggerGen();           // Gera a documentação visual da API (Swagger)
+builder.Services.AddControllers(); // Habilita o uso de Controllers na API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// 2. Constrói a aplicação com as configurações acima.
+// Registra nosso banco em memória.
+// Singleton significa que existirá apenas UMA instância dessa classe enquanto a API estiver rodando.
+// Todos os requests HTTP vão compartilhar a mesma memória (o mesmo ConcurrentDictionary).
+builder.Services.AddSingleton<IWebhookInMemoryStore, WebhookInMemoryStore>();
+
+// 2. Constrói a aplicação
 var app = builder.Build();
 
 // 3. Configura o Pipeline de Requisições HTTP (Middlewares).
-// A ordem aqui importa. Uma requisição passa por esses middlewares antes de chegar no seu Endpoint.
 if (app.Environment.IsDevelopment())
 {
-    // Habilita o Swagger apenas em ambiente de desenvolvimento (localhost)
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Força o redirecionamento de chamadas HTTP para HTTPS (mais seguro)
 app.UseHttpsRedirection();
 
-// Nota: O código de exemplo "WeatherForecast" foi removido para mantermos o projeto 
-// 100% focado no nosso domínio de Webhooks, que criaremos na Etapa 2.
+app.UseAuthorization();
 
-// 4. Roda a aplicação, ficando "escutando" por requisições HTTP.
+// Mapeia as rotas dos controllers (ex: /api/webhooks)
+app.MapControllers();
+
+// 4. Roda a aplicação
 app.Run();

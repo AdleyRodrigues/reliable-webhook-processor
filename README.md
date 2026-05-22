@@ -53,10 +53,24 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-### 3. Rodar a Aplicação
+### 3. Como Executar a Aplicação
+
+Você pode rodar a API de diferentes formas, dependendo do seu fluxo de desenvolvimento:
+
+**Opção A: .NET Watch com Hot Reload (Recomendado)**
+Inicia o servidor, **abre o navegador automaticamente** no Swagger e reinicia a API sozinha toda vez que você salva um arquivo `.cs` alterado.
 ```bash
-dotnet run
+dotnet watch --project src/ReliableWebhookProcessor.Api
 ```
+
+**Opção B: Run Clássico (Terminal)**
+Apenas liga o servidor silenciosamente no terminal. Você precisará clicar no link gerado e adicionar `/swagger` no navegador manualmente.
+```bash
+dotnet run --project src/ReliableWebhookProcessor.Api
+```
+
+**Opção C: Pelo VS Code (F5 / Debugger)**
+Se o seu VS Code estiver configurado (arquivos `launch.json` e `tasks.json`), basta apertar `F5`. Ele fará o build, conectará o debugger para inspecionar variáveis e abrirá o Swagger sozinho.
 
 ## 📦 Endpoints Principais
 
